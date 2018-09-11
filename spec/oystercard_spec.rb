@@ -1,20 +1,19 @@
 require 'oystercard'
 
 describe Oystercard do
+  let(:entry_station) { double(:station) }
 
   before(:each) {
     @oyster = Oystercard.new(Oystercard::LOWER_LIMIT)
   }
 
   describe '#balance' do
-    it { is_expected.to respond_to :balance }
     it 'should have a default balance of 0' do
       expect(subject.balance).to eq (0)
     end
   end
 
   describe '#top_up' do
-    it { expect(subject).to respond_to(:top_up).with(1).argument }
     it 'should add 2 to the balance if top_up is 2' do
       expect{ subject.top_up(2) }.to change { subject.balance }.by 2
     end
@@ -23,39 +22,37 @@ describe Oystercard do
     end
   end
 
-  # describe '#deduct' do
-  #   it { expect(subject).to respond_to(:deduct).with(1).argument }
-  #   it 'should deduct balance by 5 if deducted 5' do
-  #     oyster = Oystercard.new(10)
-  #     expect{ oyster.deduct(5) }.to change { oyster.balance }.by (-5)
-  #   end
-  # end
-
   describe '#in_journey?' do
-    it { expect(subject).to respond_to(:in_journey?) }
     it { expect(subject).to_not be_in_journey }
   end
 
   describe '#touch_in' do
     it "should make in_journey return true" do
-      @oyster.touch_in
+      @oyster.touch_in(entry_station)
       expect(@oyster).to be_in_journey
     end
     it "should raise error when balance below LOWER_LIMIT" do
-      expect { subject.touch_in }.to raise_error 'Sorry, you do not have enough money.'
+      expect { subject.touch_in(entry_station) }.to raise_error 'Sorry, you do not have enough money.'
+    end
+    it 'saves the entry station' do
+      @oyster.touch_in(entry_station)
+      expect(@oyster.entry_station).to eq(entry_station)
     end
   end
 
   describe '#touch_out' do
     it "should make in_journey return false" do
-      @oyster.touch_in
+      @oyster.touch_in(entry_station)
       @oyster.touch_out
       expect(@oyster).to_not be_in_journey
     end
     it 'should deduct minimum fare from balance' do
-      oyster = Oystercard.new(10)
-      oyster.touch_in
-      expect{ oyster.touch_out }.to change{ oyster.balance }.by (-Oystercard::MIN_FARE)
+      @oyster.touch_in((entry_station))
+      expect{ @oyster.touch_out }.to change{ @oyster.balance }.by (-Oystercard::MIN_FARE)
+    end
+    it "should set entry station to nil" do
+      @oyster.touch_in(entry_station)
+      expect{ @oyster.touch_out }.to change{ @oyster.entry_station}.to nil
     end
   end
 end

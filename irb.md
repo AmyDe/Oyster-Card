@@ -72,3 +72,14 @@ in irb
   oyster.touch_out
   oyster.balance
   --> 9
+
+In order to pay for my journey
+As a customer
+I need to know where I've travelled from
+
+in irb
+  load './lib/oystercard.rb'
+  oyster = Oystercard.new(10)
+  oyster.touch_in('entry_station')
+  oyster.entry_station == 'entry_station'
+  => true
