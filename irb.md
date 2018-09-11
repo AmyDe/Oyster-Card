@@ -83,3 +83,24 @@ in irb
   oyster.touch_in('entry_station')
   oyster.entry_station == 'entry_station'
   => true
+
+In order to know where I have been
+As a customer
+I want to see all my previous trips
+
+in pry
+  load './lib/oystercard.rb'
+  oyster = Oystercard.new(10)
+  oyster.touch_in('barons court')
+  oyster.touch_out('south ealing')
+  oyster.journeys
+  => [{ start: 'barons court', end: 'south ealing' }]
+
+In order to know how far I have travelled
+As a customer
+I want to know what zone a station is in
+
+in pry
+  load './lib/station.rb'
+  barons_court = Station.new("Barons Court", 2)
+  barons_court.zone == 2

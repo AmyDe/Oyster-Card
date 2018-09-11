@@ -2,6 +2,7 @@ require 'oystercard'
 
 describe Oystercard do
   let(:entry_station) { double(:station) }
+  let(:exit_station) { double(:station) }
 
   before(:each) {
     @oyster = Oystercard.new(Oystercard::LOWER_LIMIT)
@@ -34,25 +35,28 @@ describe Oystercard do
     it "should raise error when balance below LOWER_LIMIT" do
       expect { subject.touch_in(entry_station) }.to raise_error 'Sorry, you do not have enough money.'
     end
-    it 'saves the entry station' do
-      @oyster.touch_in(entry_station)
-      expect(@oyster.entry_station).to eq(entry_station)
-    end
   end
 
   describe '#touch_out' do
     it "should make in_journey return false" do
       @oyster.touch_in(entry_station)
-      @oyster.touch_out
+      @oyster.touch_out(exit_station)
       expect(@oyster).to_not be_in_journey
     end
     it 'should deduct minimum fare from balance' do
       @oyster.touch_in((entry_station))
-      expect{ @oyster.touch_out }.to change{ @oyster.balance }.by (-Oystercard::MIN_FARE)
+      expect{ @oyster.touch_out(exit_station) }.to change{ @oyster.balance }.by (-Oystercard::MIN_FARE)
     end
-    it "should set entry station to nil" do
+  end
+
+  describe '#journeys' do
+    it 'returns an empty list of journeys by default' do
+      expect(@oyster.journeys).to be_empty
+    end
+    it 'returns a record of our journeys' do
       @oyster.touch_in(entry_station)
-      expect{ @oyster.touch_out }.to change{ @oyster.entry_station}.to nil
+      @oyster.touch_out(exit_station)
+      expect(@oyster.journeys).to include({ start: entry_station, end: exit_station })
     end
   end
 end
