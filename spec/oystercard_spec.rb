@@ -32,7 +32,7 @@ describe Oystercard do
       @oyster.touch_in(entry_station)
       expect(@oyster).to be_in_journey
     end
-    it "should raise error when balance below LOWER_LIMIT" do
+    it 'should raise error when balance below LOWER_LIMIT' do
       expect { subject.touch_in(entry_station) }.to raise_error 'Sorry, you do not have enough money.'
     end
   end
