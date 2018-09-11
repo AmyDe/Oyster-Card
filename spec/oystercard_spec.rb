@@ -23,13 +23,13 @@ describe Oystercard do
     end
   end
 
-  describe '#deduct' do
-    it { expect(subject).to respond_to(:deduct).with(1).argument }
-    it 'should deduct balance by 5 if deducted 5' do
-      oyster = Oystercard.new(10)
-      expect{ oyster.deduct(5) }.to change { oyster.balance }.by (-5)
-    end
-  end
+  # describe '#deduct' do
+  #   it { expect(subject).to respond_to(:deduct).with(1).argument }
+  #   it 'should deduct balance by 5 if deducted 5' do
+  #     oyster = Oystercard.new(10)
+  #     expect{ oyster.deduct(5) }.to change { oyster.balance }.by (-5)
+  #   end
+  # end
 
   describe '#in_journey?' do
     it { expect(subject).to respond_to(:in_journey?) }
@@ -51,6 +51,11 @@ describe Oystercard do
       @oyster.touch_in
       @oyster.touch_out
       expect(@oyster).to_not be_in_journey
+    end
+    it 'should deduct minimum fare from balance' do
+      oyster = Oystercard.new(10)
+      oyster.touch_in
+      expect{ oyster.touch_out }.to change{ oyster.balance }.by (-Oystercard::MIN_FARE)
     end
   end
 end

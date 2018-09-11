@@ -60,3 +60,15 @@ in irb
   oyster = Oystercard.new
   oyster.touch_in
   --> raises error
+
+In order to pay for my journey
+As a customer
+When my journey is complete, I need the correct amount deducted from my card
+
+in irb
+  load './lib/oystercard.rb'
+  oyster = Oystercard.new(10)
+  oyster.touch_in
+  oyster.touch_out
+  oyster.balance
+  --> 9
