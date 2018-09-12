@@ -1,18 +1,18 @@
 require_relative 'station'
+require_relative 'journey'
 
 class Oystercard
 
-  attr_reader :balance, :entry_station, :journeys
+  attr_reader :balance, :journey_history
 
   DEFAULT_LIMIT = 90
   LOWER_LIMIT = 1
-  MIN_FARE = 1
   EMPTY_CARD = 0
 
   def initialize(balance = EMPTY_CARD)
     @balance = balance
-    @journeys = []
-    @journey_hash = {}
+    @journey_history = []
+    @current_journey = Journey.new
   end
 
   def top_up(value)
@@ -25,33 +25,41 @@ class Oystercard
   end
 
   def in_journey?
-    !@journey_hash.empty?
+    !@current_journey.journey_hash.empty?
   end
 
   def touch_in(entry_station)
     raise "Sorry, you do not have enough money." if @balance < LOWER_LIMIT
-    start_journey(entry_station)
+    if in_journey? then no_touch_out end
+    @current_journey.start(entry_station)
+  end
+
+  def no_touch_out
+    deduct(@current_journey.penalty)
+    @current_journey.end('No station')
+    store_journey
   end
 
   def touch_out(exit_station)
-    deduct(MIN_FARE)
-    end_journey(exit_station)
+    in_journey? ? deduct(@current_journey.fare) : no_touch_in
+    @current_journey.end(exit_station)
+    store_journey
   end
 
-  def start_journey(entry_station)
-    @journey_hash = { start: entry_station }
+  def no_touch_in
+    deduct(@current_journey.penalty)
+    @current_journey.start('No Station')
   end
 
-  def end_journey(exit_station)
-    @journey_hash[:end] = exit_station
-    @journeys.push(@journey_hash)
-    @journey_hash = {}
+  def store_journey
+    @journey_history.push(@current_journey.journey_hash)
+    @current_journey.journey_hash = {}
   end
 
   private
 
   def deduct(value)
-    @balance -= value
+      @balance -= value
   end
 
 end

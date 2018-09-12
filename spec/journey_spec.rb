@@ -1,27 +1,34 @@
-require 'journey'
+require 'journey.rb'
 
 describe Journey do
 
-  let(:entry_station) { double(:station) }
-  let(:exit_station) { double(:station) }
+  let(:entry_station) { double(:Bank) }
+  let(:exit_station) { double(:Acton) }
 
-  before(:each) {
-    @oyster = Oystercard.new(Oystercard::LOWER_LIMIT)
-  }
+  describe '#start' do
+    it 'pushes given entry station to journey hash' do
+      subject.start(entry_station)
+      expect(subject.journey_hash).to eq({ start: entry_station })
+    end
+  end
 
-  # describe '#journeys' do
-  #   it 'returns a record of our journeys' do
-  #     @oyster.touch_in(entry_station)
-  #     @oyster.touch_out(exit_station)
-  #     expect(@oyster.journeys).to include({ start: entry_station, end: exit_station })
-  #   end
-  # end
+  describe '#end' do
+    it "should push exit station to journey hash" do
+      subject.start(entry_station)
+      subject.end(exit_station)
+      expect(subject.journey_hash).to eq({ start: entry_station, end: exit_station })
+    end
+  end
 
-  # describe '#start' do
-  #   it '...' do
-  #     subject.start("entry_station")
-  #     expect(journey.journey_hash).to eq({ start: "entry_station" })
-  #   end
-  # end
+  describe '#fare' do
+    it "calculates the fare for a journey" do
+      expect(subject.fare).to eq Journey::MIN_FARE
+    end
+  end
 
+  describe '#penalty' do
+    it "calculates the penalty for incomplete journey" do
+      expect(subject.penalty).to eq Journey::PENALTY
+    end
+  end
 end

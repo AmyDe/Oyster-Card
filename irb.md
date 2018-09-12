@@ -104,3 +104,13 @@ in pry
   load './lib/station.rb'
   barons_court = Station.new("Barons Court", 2)
   barons_court.zone == 2
+
+Let's create a new Journey class, it should be responsible for starting a journey, finishing a journey, calculating the fare of a journey, and returning whether or not the journey is complete.
+
+in pry
+  load './lib/oystercard.rb'
+  oyster = Oystercard.new(10)
+  oyster.touch_in("West Kensington")
+  oyster.touch_out("South Kensington")
+  oyster.journeys
+  --> [{Entry: W K, Exit: S K}]
